@@ -99,6 +99,10 @@ PluginComponent {
         let out = [];
         for (let i = 0; i < root.groupConfig.length; i++) {
             const g = root.groupConfig[i];
+            // plugin settings are user-editable JSON on disk, so a malformed
+            // entry must skip rather than take the whole popout down with it.
+            if (!g)
+                continue;
             const names = Array.isArray(g.workspaces) ? g.workspaces : [];
             const model = names.map(function (n) {
                 return root.namedWorkspaces.find(function (w) {
@@ -121,9 +125,9 @@ PluginComponent {
             return [];
         let claimed = [];
         for (let i = 0; i < root.groupConfig.length; i++) {
-            const names = root.groupConfig[i].workspaces;
-            if (Array.isArray(names))
-                claimed = claimed.concat(names);
+            const g = root.groupConfig[i];
+            if (g && Array.isArray(g.workspaces))
+                claimed = claimed.concat(g.workspaces);
         }
         return root.namedWorkspaces.filter(function (w) {
             return claimed.indexOf(w.name) < 0;

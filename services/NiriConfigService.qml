@@ -42,7 +42,10 @@ Singleton {
 
     function reload() {
         root._pending = [root.mainConfigPath];
+        // Seed with the main config so a config that includes itself by name is
+        // caught on the first hop rather than being read a second time.
         root._seen = {};
+        root._seen[root.mainConfigPath] = true;
         root._names = [];
         root.lastError = "";
         _readNext();
@@ -64,15 +67,34 @@ Singleton {
             reader.path = next;
     }
 
+    // Collapse `.`, `..`, and doubled slashes so one file has exactly one
+    // identity. Without this, `./config.kdl` and `config.kdl` are different
+    // keys in _seen and the same file gets read twice.
+    function _normalize(path) {
+        const parts = path.split("/");
+        let out = [];
+        for (let i = 0; i < parts.length; i++) {
+            const p = parts[i];
+            if (p === "." || (p === "" && out.length > 0))
+                continue;
+            if (p === ".." && out.length > 1) {
+                out.pop();
+                continue;
+            }
+            out.push(p);
+        }
+        return out.join("/") || "/";
+    }
+
     // Resolve an include target against the directory holding the file that
     // declared it. Absolute and ~-prefixed paths are taken as-is.
     function _resolve(target, fromPath) {
         if (target.startsWith("/"))
-            return target;
+            return root._normalize(target);
         if (target.startsWith("~/"))
-            return Paths.strip(StandardPaths.writableLocation(StandardPaths.HomeLocation)) + target.substring(1);
+            return root._normalize(Paths.strip(StandardPaths.writableLocation(StandardPaths.HomeLocation)) + target.substring(1));
         const dir = fromPath.substring(0, fromPath.lastIndexOf("/"));
-        return dir + "/" + target;
+        return root._normalize(dir + "/" + target);
     }
 
     function _parse(text, fromPath) {
