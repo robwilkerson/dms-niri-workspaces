@@ -1,0 +1,5 @@
+# Crash-recovery scratch for a single session; goes stale immediately.
+SESSION_CONTEXT.md
+
+# Per-machine permission state, not project policy.
+.claude/settings.local.json

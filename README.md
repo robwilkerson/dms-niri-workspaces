@@ -1,0 +1,91 @@
+# Niri Workspaces
+
+A [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) dankbar
+widget that shows the **focused** niri workspace as a pill **segmented to match
+its column count**, and opens a grouped switcher for every named workspace.
+
+Where the built-in workspace switcher renders every workspace on the bar, this
+declutters to just the focused one — its name, and a small pill whose segment
+count equals the number of niri columns currently in that workspace. The full
+list moves into a dropdown you organize yourself.
+
+## What It Does
+
+**On the bar:** the focused workspace's name, followed by a pill with one
+segment per column. The segment holding the active window is drawn at full
+strength; the rest are faded.
+
+**In the dropdown:** every named workspace, arranged into groups you define,
+each row carrying the same column pill. Click a row to switch to it. A "New
+workspace" action at the bottom jumps to niri's trailing auto-empty workspace.
+
+## niri Only
+
+Columns come from `layout.pos_in_scrolling_layout`, a niri scrollable-tiling
+concept, read from DMS's `NiriService`. It does nothing useful on other
+compositors.
+
+## Requirements
+
+- DankMaterialShell ≥ 1.4.0
+- niri
+
+## Install
+
+```sh
+mkdir -p ~/.config/DankMaterialShell/plugins
+git clone <repo-url> ~/.config/DankMaterialShell/plugins/niriWorkspaces
+```
+
+Then in DMS: Settings → Plugins → Scan, enable **Niri Workspaces**, and add it
+to a bar section. You'll likely want to remove the built-in workspace switcher
+to avoid duplication.
+
+## Grouping Workspaces
+
+niri has no concept of workspace groups — its config is a flat list of
+`workspace "Name" {}` declarations — so grouping lives entirely in this plugin's
+settings.
+
+Open Settings → Plugin Management → Niri Workspaces, or click the gear in the
+dropdown header. There you can:
+
+- **Define groups** by name, in the order they should render
+- **Assign workspaces** by dragging them from the pool onto a group
+- **Reorder within a group** by dropping a workspace onto another one, landing
+  it in front
+- **Reorder the groups** with the arrows on each group card
+- **Unassign** by dragging a workspace back to the pool
+
+The pool lists the workspaces niri declares, read from `config.kdl` and every
+file it `include`s, so the names always match what you actually typed in your
+niri config.
+
+Anything no group claims renders in a bare list beneath the groups. With no
+groups configured, that's every workspace — which is what a fresh install
+shows.
+
+## Development
+
+`just` drives the whole loop; run `just` for the list.
+
+DMS loads plugins from `~/.config/DankMaterialShell/plugins/<id>`, never from
+your clone. `just develop start` symlinks this tree over the installed copy and
+`just status` reports which one the bar is actually running. `just doctor`
+checks the invariants that fail silently at runtime.
+
+There is no build step and no test suite: DMS reads the QML at load time, so
+verification means running it. `just logs` shows what the bar logged about the
+plugin — trust it over `dms ipc call plugins list`, which reports a plugin as
+loaded whether or not its widget is on your bar.
+
+## Scope
+
+Working: the bar pill, the grouped switcher, and settings-defined grouping.
+
+Planned: per-column app icons, click-to-focus-column on the bar pill segments
+(the MouseArea is already reserved), an icons-off toggle, and click-to-overview.
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
