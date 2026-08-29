@@ -1,0 +1,15 @@
+{
+  "id": "niriWorkspaces",
+  "name": "Niri Workspaces",
+  "description": "The focused niri workspace as a pill segmented to match its column count, plus a grouped switcher for every named workspace.",
+  "version": "0.1.0",
+  "author": "Rob Wilkerson",
+  "icon": "view_column",
+  "type": "widget",
+  "capabilities": ["dankbar-widget"],
+  "component": "./NiriWorkspaces.qml",
+  "settings": "./NiriWorkspacesSettings.qml",
+  "requires_dms": ">=1.4.0",
+  "dependencies": ["niri"],
+  "permissions": ["settings_read", "settings_write"]
+}
