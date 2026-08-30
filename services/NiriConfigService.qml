@@ -136,9 +136,12 @@ Singleton {
         }
         onLoadFailed: {
             // A missing include is the user's problem to fix in niri, not ours.
-            // Record it and keep scanning whatever else is queued.
-            if (reader.path === root.mainConfigPath)
-                root.lastError = "Could not read " + root.mainConfigPath;
+            // Record it and keep scanning whatever else is queued: a partial
+            // pool is more useful than none, but it must not report itself as
+            // complete. First failure wins — reload() clears lastError, and the
+            // first unreadable file is the one worth naming.
+            if (root.lastError === "")
+                root.lastError = "Could not read " + reader.path;
             Qt.callLater(root._readNext);
         }
     }
