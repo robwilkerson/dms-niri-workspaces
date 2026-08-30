@@ -15,9 +15,13 @@ list moves into a dropdown you organize yourself.
 segment per column. The segment holding the active window is drawn at full
 strength; the rest are faded.
 
+![The bar pill](./docs/pill.png)
+
 **In the dropdown:** every named workspace, arranged into groups you define,
 each row carrying the same column pill. Click a row to switch to it. A "New
 workspace" action at the bottom jumps to niri's trailing auto-empty workspace.
+
+![The workspace switcher](./docs/screenshot.png)
 
 ## niri Only
 
@@ -51,19 +55,22 @@ Open Settings → Plugin Management → Niri Workspaces, or click the gear in th
 dropdown header. There you can:
 
 - **Define groups** by name, in the order they should render
+- **Rename a group** with the pencil on its card
 - **Assign workspaces** by dragging them from the pool onto a group
 - **Reorder within a group** by dropping a workspace onto another one, landing
   it in front
 - **Reorder the groups** with the arrows on each group card
 - **Unassign** by dragging a workspace back to the pool
 
+![The settings pane](./docs/settings.png)
+
 The pool lists the workspaces niri declares, read from `config.kdl` and every
 file it `include`s, so the names always match what you actually typed in your
 niri config.
 
-Anything no group claims renders in a bare list beneath the groups. With no
-groups configured, that's every workspace — which is what a fresh install
-shows.
+Anything no group claims renders as a trailing "Ungrouped" group. With no
+groups configured that's every workspace, and the group drops its title, so a
+fresh install shows one plain list.
 
 ## Development
 
@@ -83,8 +90,9 @@ loaded whether or not its widget is on your bar.
 
 Working: the bar pill, the grouped switcher, and settings-defined grouping.
 
-Planned: per-column app icons, click-to-focus-column on the bar pill segments
-(the MouseArea is already reserved), an icons-off toggle, and click-to-overview.
+Ideas not yet committed to: per-column app icons, an icons-off toggle, and
+click-to-overview. Anything actually under consideration lives in the
+[issue tracker](https://github.com/robwilkerson/dms-niri-workspaces/issues).
 
 ## License
 
