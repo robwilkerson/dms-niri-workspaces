@@ -145,16 +145,20 @@ Singleton {
             // starts on a fresh event-loop turn.
             Qt.callLater(root._readNext);
         }
-        onLoadFailed: {
+        onLoadFailed: error => {
             // Keep scanning — a partial pool beats none — but never report it
-            // as complete. An `optional=true` include is allowed to be absent,
-            // so its failure is silent; anything else is worth naming, and is
-            // as likely ours as the user's, since _resolve only approximates
-            // niri's include resolution. Naming the path we actually tried is
-            // what makes that visible.
+            // as complete. `optional=true` excuses a file that isn't there and
+            // nothing more: niri still fails on one that exists but can't be
+            // read, so only FileNotFound is suppressed here. Anything else is
+            // worth naming, and is as likely ours as the user's, since
+            // _resolve only approximates niri's include resolution. Naming the
+            // path we actually tried is what makes that visible.
             // First failure wins; reload() clears lastError before each scan.
-            if (root.lastError === "" && !root._optional[reader.path])
-                root.lastError = "Could not read " + reader.path;
+            const excused = root._optional[reader.path] === true
+                && error === FileViewError.FileNotFound;
+            if (root.lastError === "" && !excused)
+                root.lastError = "Could not read " + reader.path
+                    + " (" + FileViewError.toString(error) + ")";
             Qt.callLater(root._readNext);
         }
     }
