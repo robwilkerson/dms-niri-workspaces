@@ -135,11 +135,13 @@ Singleton {
             Qt.callLater(root._readNext);
         }
         onLoadFailed: {
-            // A missing include is the user's problem to fix in niri, not ours.
-            // Record it and keep scanning whatever else is queued: a partial
-            // pool is more useful than none, but it must not report itself as
-            // complete. First failure wins — reload() clears lastError, and the
-            // first unreadable file is the one worth naming.
+            // Keep scanning — a partial pool beats none — but never report it
+            // as complete. A failure here is as likely ours as the user's:
+            // niri resolves includes properly, while _resolve only approximates
+            // it and _parse only matches double-quoted targets, so a glob or a
+            // raw-string path leaves niri happy and the pool quietly short.
+            // Naming the path we actually tried is what makes that visible.
+            // First failure wins; reload() clears lastError before each scan.
             if (root.lastError === "")
                 root.lastError = "Could not read " + reader.path;
             Qt.callLater(root._readNext);
