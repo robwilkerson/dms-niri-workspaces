@@ -84,19 +84,43 @@ PluginSettings {
             });
         }
 
-        function addGroup(title) {
+        // A title is the user's only handle on a group, so it has to be
+        // non-empty and unique. `exempt` is the group index allowed to keep its
+        // current title — a rename checking itself — and is -1 when adding.
+        function titleAvailable(exempt, title) {
             const clean = title.trim();
             if (clean.length === 0)
-                return;
+                return false;
             for (let i = 0; i < editor.groups.length; i++)
-                if (editor.groups[i].title === clean)
-                    return;
+                if (i !== exempt && editor.groups[i].title === clean)
+                    return false;
+            return true;
+        }
+
+        function addGroup(title) {
+            if (!editor.titleAvailable(-1, title))
+                return;
             const next = editor.groups.slice();
             next.push({
-                "title": clean,
+                "title": title.trim(),
                 "workspaces": []
             });
             editor._commit(next);
+        }
+
+        // Membership is stored by workspace name rather than by title, so a
+        // rename is purely cosmetic and nothing else has to move. Returns
+        // whether it took, so the field can stay open on a rejected title.
+        function renameGroup(index, title) {
+            if (!editor.titleAvailable(index, title))
+                return false;
+            const next = editor.groups.slice();
+            next[index] = {
+                "title": title.trim(),
+                "workspaces": next[index].workspaces.slice()
+            };
+            editor._commit(next);
+            return true;
         }
 
         function removeGroup(index) {
@@ -291,6 +315,22 @@ PluginSettings {
                     required property int index
                     required property var modelData
 
+                    // Renaming happens in place: the title text swaps for a
+                    // field rather than opening a dialog over the card.
+                    property bool editing: false
+
+                    function beginRename() {
+                        titleField.text = groupCard.modelData.title;
+                        groupCard.editing = true;
+                        titleField.forceActiveFocus();
+                        titleField.selectAll();
+                    }
+
+                    function commitRename() {
+                        if (editor.renameGroup(groupCard.index, titleField.text))
+                            groupCard.editing = false;
+                    }
+
                     width: layout.width
                     height: groupCol.implicitHeight + Theme.spacingM * 2
                     radius: Theme.cornerRadius
@@ -319,24 +359,64 @@ PluginSettings {
                         Item {
                             width: parent.width
                             // The action buttons are taller than the title text,
-                            // so size to whichever wins or the row clips.
-                            height: Math.max(groupTitle.implicitHeight, 28)
+                            // and the rename field taller than either, so size to
+                            // whichever is showing or the row clips.
+                            height: groupCard.editing
+                                ? titleField.height
+                                : Math.max(groupTitle.implicitHeight, 28)
 
                             StyledText {
                                 id: groupTitle
 
                                 anchors.left: parent.left
                                 anchors.verticalCenter: parent.verticalCenter
+                                visible: !groupCard.editing
                                 text: groupCard.modelData.title
                                 font.pixelSize: Theme.fontSizeMedium
                                 font.weight: Font.DemiBold
                                 color: Theme.surfaceText
                             }
 
+                            DankTextField {
+                                id: titleField
+
+                                anchors.left: parent.left
+                                anchors.right: groupActions.left
+                                anchors.rightMargin: Theme.spacingS
+                                anchors.verticalCenter: parent.verticalCenter
+                                visible: groupCard.editing
+                                // A blank or already-taken title is refused on
+                                // commit, so say so while it is still being typed.
+                                normalBorderColor: valid ? Theme.outlineMedium : Theme.error
+                                focusedBorderColor: valid ? Theme.primary : Theme.error
+
+                                readonly property bool valid: editor.titleAvailable(groupCard.index, text)
+
+                                onAccepted: groupCard.commitRename()
+                                Keys.onEscapePressed: groupCard.editing = false
+                            }
+
                             Row {
+                                id: groupActions
+
                                 anchors.right: parent.right
                                 anchors.verticalCenter: parent.verticalCenter
                                 spacing: Theme.spacingXS
+
+                                DankActionButton {
+                                    buttonSize: 28
+                                    iconName: groupCard.editing ? "check" : "edit"
+                                    enabled: !groupCard.editing || titleField.valid
+                                    opacity: enabled ? 1 : 0.35
+                                    iconColor: Theme.surfaceVariantText
+                                    tooltipText: groupCard.editing ? "Save name" : "Rename group"
+                                    onClicked: {
+                                        if (groupCard.editing)
+                                            groupCard.commitRename();
+                                        else
+                                            groupCard.beginRename();
+                                    }
+                                }
 
                                 DankActionButton {
                                     buttonSize: 28
