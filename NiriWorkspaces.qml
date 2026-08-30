@@ -1,15 +1,15 @@
 // Niri Workspaces — a DankMaterialShell dankbar widget.
 //
 // Bar: the focused workspace's name + a pill segmented to match its niri column
-// count (active column full-strength, inactive columns faded). Clicking the
-// NAME opens a grouped dropdown of all named workspaces (same pill treatment,
-// current one highlighted) with click-to-switch, plus a "New workspace" action
-// that jumps to niri's trailing auto-empty. The pill segments are reserved for
-// a future click-to-focus-column action (see the consuming MouseArea).
+// count (active column full-strength, inactive columns faded). Clicking anywhere
+// on the widget opens a grouped dropdown of all named workspaces (same pill
+// treatment, current one highlighted) with click-to-switch, plus a "New
+// workspace" action that jumps to niri's trailing auto-empty.
 //
-// Grouping is inferred from the config for now (Scratchpad by name, a lettered
-// name list, active projects by name, nascent = any "Project N" by pattern).
-// Deferred: expose groups as a setting; drag-and-drop reordering.
+// Groups come from plugin settings, which own both the group list and its
+// members; see NiriWorkspacesSettings.qml. niri has no grouping concept of its
+// own, so anything settings does not claim renders as one untitled trailing
+// group.
 //
 // niri-specific: columns come from `layout.pos_in_scrolling_layout` read off
 // DMS's NiriService, so this does nothing useful on other compositors.
@@ -180,41 +180,32 @@ PluginComponent {
                 color: Theme.surfaceText
             }
 
-            // Pill: a MouseArea that consumes clicks keeps the segments OUT of
-            // the dropdown trigger and reserves them for a future
-            // click-to-focus-column action.
-            MouseArea {
+            // Pill: visual-only like the name, so the whole widget is one
+            // dropdown trigger with no dead zone.
+            Row {
+                id: barSegs
                 anchors.verticalCenter: parent.verticalCenter
-                implicitWidth: barSegs.implicitWidth
-                implicitHeight: barSegs.implicitHeight
-                onClicked: {
-                    // Deferred: focus the clicked column.
-                }
+                spacing: root.segGap
 
-                Row {
-                    id: barSegs
-                    spacing: root.segGap
+                Repeater {
+                    model: root.columnList.length > 0 ? root.columnList : [{ "col": 0, "active": false }]
 
-                    Repeater {
-                        model: root.columnList.length > 0 ? root.columnList : [{ "col": 0, "active": false }]
+                    delegate: Rectangle {
+                        required property int index
+                        required property var modelData
 
-                        delegate: Rectangle {
-                            required property int index
-                            required property var modelData
+                        readonly property int segN: root.columnList.length > 0 ? root.columnList.length : 1
+                        readonly property real endR: root.segH / 2
 
-                            readonly property int segN: root.columnList.length > 0 ? root.columnList.length : 1
-                            readonly property real endR: root.segH / 2
-
-                            width: root.segW
-                            height: root.segH
-                            color: root.columnList.length === 0
-                                ? Qt.rgba(Theme.surfaceText.r, Theme.surfaceText.g, Theme.surfaceText.b, 0.3)
-                                : (modelData.active ? Theme.primary : Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.35))
-                            topLeftRadius: index === 0 ? endR : 2
-                            bottomLeftRadius: index === 0 ? endR : 2
-                            topRightRadius: index === (segN - 1) ? endR : 2
-                            bottomRightRadius: index === (segN - 1) ? endR : 2
-                        }
+                        width: root.segW
+                        height: root.segH
+                        color: root.columnList.length === 0
+                            ? Qt.rgba(Theme.surfaceText.r, Theme.surfaceText.g, Theme.surfaceText.b, 0.3)
+                            : (modelData.active ? Theme.primary : Qt.rgba(Theme.primary.r, Theme.primary.g, Theme.primary.b, 0.35))
+                        topLeftRadius: index === 0 ? endR : 2
+                        bottomLeftRadius: index === 0 ? endR : 2
+                        topRightRadius: index === (segN - 1) ? endR : 2
+                        bottomRightRadius: index === (segN - 1) ? endR : 2
                     }
                 }
             }
