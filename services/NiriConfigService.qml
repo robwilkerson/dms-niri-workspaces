@@ -39,6 +39,10 @@ Singleton {
     property var _pending: []
     property var _seen: ({})
     property var _names: []
+    // Paths niri declared `optional=true`, which it is allowed to not find.
+    // Keyed by resolved path so the failure handler can tell an absent optional
+    // include from a genuinely broken one.
+    property var _optional: ({})
 
     function reload() {
         root._pending = [root.mainConfigPath];
@@ -47,6 +51,7 @@ Singleton {
         root._seen = {};
         root._seen[root.mainConfigPath] = true;
         root._names = [];
+        root._optional = {};
         root.lastError = "";
         _readNext();
     }
@@ -112,11 +117,17 @@ Singleton {
                 continue;
             }
 
-            const inc = line.match(/^\s*include\s+"([^"]+)"/);
+            // niri allows node properties before the path, as in
+            // `include optional=true "foo.kdl"`. Match them explicitly rather
+            // than skipping to the first quote, so a quoted property value
+            // can't be mistaken for the include target.
+            const inc = line.match(/^\s*include\s+((?:[A-Za-z_-]+=(?:true|false|"[^"]*")\s+)*)"([^"]+)"/);
             if (inc) {
-                const path = root._resolve(inc[1], fromPath);
+                const path = root._resolve(inc[2], fromPath);
                 if (!root._seen[path]) {
                     root._seen[path] = true;
+                    if (/\boptional=(?:true|"true")/.test(inc[1]))
+                        root._optional[path] = true;
                     root._pending.push(path);
                 }
             }
@@ -136,13 +147,13 @@ Singleton {
         }
         onLoadFailed: {
             // Keep scanning — a partial pool beats none — but never report it
-            // as complete. A failure here is as likely ours as the user's:
-            // niri resolves includes properly, while _resolve only approximates
-            // it and _parse only matches double-quoted targets, so a glob or a
-            // raw-string path leaves niri happy and the pool quietly short.
-            // Naming the path we actually tried is what makes that visible.
+            // as complete. An `optional=true` include is allowed to be absent,
+            // so its failure is silent; anything else is worth naming, and is
+            // as likely ours as the user's, since _resolve only approximates
+            // niri's include resolution. Naming the path we actually tried is
+            // what makes that visible.
             // First failure wins; reload() clears lastError before each scan.
-            if (root.lastError === "")
+            if (root.lastError === "" && !root._optional[reader.path])
                 root.lastError = "Could not read " + reader.path;
             Qt.callLater(root._readNext);
         }
