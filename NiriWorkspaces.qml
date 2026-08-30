@@ -119,7 +119,7 @@ PluginComponent {
         return out;
     }
 
-    // Anything no group claimed, rendered bare beneath the cards.
+    // Anything no group claimed, rendered as a trailing group of its own.
     readonly property var wsUngrouped: {
         if (!root.showUngrouped)
             return [];
@@ -132,6 +132,20 @@ PluginComponent {
         return root.namedWorkspaces.filter(function (w) {
             return claimed.indexOf(w.name) < 0;
         });
+    }
+
+    // What the popout actually renders: the configured groups, then the
+    // ungrouped set as an implied group so it reads like the rest. That
+    // implied group is titled only when there are real groups to tell it
+    // apart from — with none configured it holds every workspace, where an
+    // "Ungrouped" header would label the whole list.
+    readonly property var renderGroups: {
+        if (root.wsUngrouped.length === 0)
+            return root.groupDefs;
+        return root.groupDefs.concat([{
+            "title": root.groupDefs.length > 0 ? "Ungrouped" : "",
+            "model": root.wsUngrouped
+        }]);
     }
 
     // niri's trailing auto-created empty workspace (highest-idx unnamed one).
@@ -313,9 +327,10 @@ PluginComponent {
                 width: parent.width
                 spacing: Theme.spacingL
 
-                // Carded groups, in the order the settings pane lists them.
+                // Carded groups, in the order the settings pane lists them,
+                // with the implied ungrouped group last.
                 Repeater {
-                    model: root.groupDefs
+                    model: root.renderGroups
 
                     delegate: Column {
                         id: grp
@@ -327,7 +342,8 @@ PluginComponent {
 
                         Item {
                             width: parent.width
-                            height: grpHdr.implicitHeight
+                            visible: grp.modelData.title !== ""
+                            height: visible ? grpHdr.implicitHeight : 0
 
                             StyledText {
                                 id: grpHdr
@@ -356,11 +372,6 @@ PluginComponent {
                         }
                     }
                 }
-
-                // Ungrouped workspaces, bare beneath the cards. With no groups
-                // configured this is every named workspace, which is what a
-                // fresh install shows.
-                Repeater { model: root.wsUngrouped; delegate: wsRowComp }
 
                 // Divider + New workspace action.
                 Rectangle {
