@@ -9,8 +9,10 @@ Consequence: **never write an upstream bug report from the installed source
 alone.** Check the installed version first, then compare against the current
 tag and default branch on GitHub before describing a symptom.
 
+`dms --version` does not exist. Ask the package manager instead — `rpm -q dms`
+on Fedora, `pacman -Qi dms` on Arch, and so on.
+
 ```
-dms --version                                   # what you are actually running
 gh release list --repo AvengeMedia/DankMaterialShell --limit 5
 gh api "repos/AvengeMedia/DankMaterialShell/contents/<path>?ref=<tag>" \
     --jq '.content' | base64 -d

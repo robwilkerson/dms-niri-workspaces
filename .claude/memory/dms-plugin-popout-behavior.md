@@ -1,12 +1,15 @@
 # What DMS Gives a Plugin Popout for Free
 
-Verified against the DMS source at `/usr/share/quickshell/dms/`, which on this
-box is DMS **1.5.3** (an RPM baked into the bootc image, not a nix package).
+Verified against the DMS source at `/usr/share/quickshell/dms/`, an RPM baked
+into the bootc image rather than a nix package. That tree now ships **1.6.0**.
+The directory carries no version of its own, so `rpm -qf` on any file in it is
+how you tell which release you are actually reading.
 
-**Line numbers below are 1.5.3.** Upstream restructured in 1.6.0: every QML
-path moved under `quickshell/` in the repo, so `Modules/Plugins/Foo.qml` is now
-`quickshell/Modules/Plugins/Foo.qml` and offsets have drifted by a few dozen
-lines. Re-grep before citing a location in an upstream report.
+**Line numbers below were taken against 1.5.3** and have not been re-checked
+since. Upstream also restructured in 1.6.0: every QML path moved under
+`quickshell/` in the repo, so `Modules/Plugins/Foo.qml` is now
+`quickshell/Modules/Plugins/Foo.qml`. Re-grep before citing any location in an
+upstream report.
 
 **Escape closes it already.** `Modules/Plugins/PluginPopout.qml` hardcodes a
 `Keys.onPressed` handler for Escape. A plugin writes nothing for this.
