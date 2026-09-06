@@ -1,4 +1,4 @@
-# Niri Workspaces
+# Niri Workspace Bar
 
 A [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) dankbar
 widget that shows the **focused** niri workspace as a pill **segmented to match
@@ -42,10 +42,10 @@ compositors.
 
 ```sh
 mkdir -p ~/.config/DankMaterialShell/plugins
-git clone <repo-url> ~/.config/DankMaterialShell/plugins/niriWorkspaces
+git clone <repo-url> ~/.config/DankMaterialShell/plugins/niriWorkspaceBar
 ```
 
-Then in DMS: Settings → Plugins → Scan, enable **Niri Workspaces**, and add it
+Then in DMS: Settings → Plugins → Scan, enable **Niri Workspace Bar**, and add it
 to a bar section. You'll likely want to remove the built-in workspace switcher
 to avoid duplication.
 
@@ -55,7 +55,7 @@ niri has no concept of workspace groups — its config is a flat list of
 `workspace "Name" {}` declarations — so grouping lives entirely in this plugin's
 settings.
 
-Open Settings → Plugin Management → Niri Workspaces, or click the gear in the
+Open Settings → Plugin Management → Niri Workspace Bar, or click the gear in the
 dropdown header. There you can:
 
 - **Define groups** by name, in the order they should render
@@ -96,7 +96,7 @@ Working: the bar pill, the grouped switcher, and settings-defined grouping.
 
 Ideas not yet committed to: per-column app icons, an icons-off toggle, and
 click-to-overview. Anything actually under consideration lives in the
-[issue tracker](https://github.com/robwilkerson/dms-niri-workspaces/issues).
+[issue tracker](https://github.com/robwilkerson/dms-niri-workspace-bar/issues).
 
 ## About the Robot
 

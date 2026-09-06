@@ -1,4 +1,4 @@
-// Niri Workspaces — settings panel (Settings → Plugin Management).
+// Niri Workspace Bar — settings panel (Settings → Plugin Management).
 //
 // Three things happen here: define groups, see the workspaces niri declares,
 // and drag a workspace onto a group to assign it. Row order is render order in
@@ -6,7 +6,7 @@
 //
 // niri models no grouping of its own — its config is a flat list of
 // `workspace "Name" {}` nodes — so the assignment lives only in plugin
-// settings, keyed "niriWorkspaces" and read back by NiriWorkspaces.qml.
+// settings, keyed "niriWorkspaceBar" and read back by NiriWorkspaces.qml.
 import QtQuick
 import qs.Common
 import qs.Widgets
@@ -18,7 +18,7 @@ PluginSettings {
     // PluginSettings declares pluginId `required` and injects nothing, so a
     // settings pane must state it. A wrong literal silently resolves against
     // another plugin's settings with no error anywhere.
-    pluginId: "niriWorkspaces"
+    pluginId: "niriWorkspaceBar"
 
     StyledText {
         width: parent.width

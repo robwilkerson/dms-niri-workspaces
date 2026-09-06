@@ -1,6 +1,6 @@
 {
-  "id": "niriWorkspaces",
-  "name": "Niri Workspaces",
+  "id": "niriWorkspaceBar",
+  "name": "Niri Workspace Bar",
   "description": "The focused niri workspace as a pill segmented to match its column count, plus a grouped switcher for every named workspace.",
   "version": "0.2.0",
   "author": "Rob Wilkerson",

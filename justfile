@@ -12,7 +12,7 @@
 
 # Must match plugin.json's `id`. DMS reads the manifest rather than the folder
 # name, but keeping them equal is what lets these recipes find the install.
-PLUGIN_ID := "niriWorkspaces"
+PLUGIN_ID := "niriWorkspaceBar"
 
 # --unsorted lists recipes and groups in source order rather than alphabetically,
 # so they read setup -> daily loop -> checks.
