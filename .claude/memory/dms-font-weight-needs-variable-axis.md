@@ -7,13 +7,14 @@ ignored.
 **Cause.** `font.weight` selects a *face*; it does not deform one. DMS's sans is
 `DankCommon/assets/fonts/inter/InterVariable.ttf`, pulled in by a QML
 `FontLoader` in `DankCommon/Common/Fonts.qml`. Qt registers a variable font
-loaded that way as a single instance at weight 400, and Inter is not installed
-system-wide (`fc-list | grep -i inter` comes back empty), so there is no
-heavier face anywhere to match. Qt finds nothing, falls back to Regular, and
-says nothing about it.
+loaded that way as a single instance at weight 400. Unless Inter also happens
+to be installed system-wide, there is no heavier face anywhere to match, so Qt
+falls back to Regular and says nothing about it. `fc-list | grep -i inter`
+tells you whether this system has one; empty output means the bundled copy is
+all there is, which is the common case.
 
-**Fix.** Drive the `wght` variable axis directly, alongside the weight. Qt 6.7+
-is required; the box runs 6.11.
+**Fix.** Drive the `wght` variable axis directly, alongside the weight. This
+requires Qt 6.7+, where `font.variableAxes` was introduced.
 
 ```qml
 readonly property int labelWeight: isActive ? Font.DemiBold : Font.Normal

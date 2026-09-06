@@ -1,9 +1,8 @@
 # What DMS Gives a Plugin Popout for Free
 
-Verified against the DMS source at `/usr/share/quickshell/dms/`, an RPM baked
-into the bootc image rather than a nix package. That tree now ships **1.6.0**.
-The directory carries no version of its own, so `rpm -qf` on any file in it is
-how you tell which release you are actually reading.
+Verified against the installed DMS source, which lives at
+`/usr/share/quickshell/dms/` on a packaged install. Confirm which release that
+tree actually is before trusting anything below; see [[dms-upgrade-path]].
 
 **Line numbers below were taken against 1.5.3** and have not been re-checked
 since. Upstream also restructured in 1.6.0: every QML path moved under

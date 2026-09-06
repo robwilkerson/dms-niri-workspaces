@@ -14,7 +14,9 @@ check, and it invalidates a lot of downstream work if skipped:
 python3 -c "import json,glob; print([json.load(open(f))['id'] for f in glob.glob('plugins/*.json')])" | grep -i <candidate>
 ```
 
-**Run both validators locally.** They catch everything CI does:
+**Run both validators locally.** They catch everything CI does. The registry
+documents `pip install jinja2 requests`; running them without touching the
+system Python works too, and `pillow` is needed on top of the documented pair:
 
 ```
 uv run --with jinja2 --with requests --with pillow python3 .github/generate.py --validate

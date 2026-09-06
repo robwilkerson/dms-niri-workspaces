@@ -1,16 +1,18 @@
 # The Installed DMS Version Lags Upstream, and Why That Matters
 
-DMS is not installed by whatever manages this plugin. It arrives as a distro
-package (`rpm -qf /usr/share/quickshell/dms/DMSShellIPC.qml` names it), which
-means the version you are testing against is set by a packaging pipeline, not
-by upstream's release cadence.
+DMS is not installed by whatever manages this plugin. It arrives through your
+distribution's packaging, which means the version you are testing against is
+set by a packaging pipeline rather than by upstream's release cadence, and can
+trail a release by weeks.
 
 Consequence: **never write an upstream bug report from the installed source
 alone.** Check the installed version first, then compare against the current
 tag and default branch on GitHub before describing a symptom.
 
-`dms --version` does not exist. Ask the package manager instead — `rpm -q dms`
-on Fedora, `pacman -Qi dms` on Arch, and so on.
+`dms --version` does not exist. Ask your package manager instead (`rpm -q dms`,
+`pacman -Qi dms`, and so on). Querying which package owns a file under
+`/usr/share/quickshell/dms/` also tells you whether that tree is current, since
+the directory carries no version of its own.
 
 ```
 gh release list --repo AvengeMedia/DankMaterialShell --limit 5
@@ -18,8 +20,8 @@ gh api "repos/AvengeMedia/DankMaterialShell/contents/<path>?ref=<tag>" \
     --jq '.content' | base64 -d
 ```
 
-Quote the URL in zsh — the `?ref=` makes it a glob otherwise, and `gh` fails
-with a confusing "no matches found."
+Quote that URL. In zsh and other globbing shells the `?ref=` is read as a
+pattern, and `gh` fails with a confusing "no matches found."
 
 This is not hypothetical. The `widget status` bug in
 [[dms-plugin-popout-behavior]] was very nearly reported with a symptom upstream
