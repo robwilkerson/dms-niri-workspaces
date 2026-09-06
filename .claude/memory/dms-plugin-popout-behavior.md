@@ -51,9 +51,17 @@ alone, without requiring `popoutTarget`. But `PluginComponent` sets
 - **1.5.3** — returns `hidden`. Verified live: popout open on screen, still
   `hidden`, while the built-in `clock` correctly returns `visible`.
 - **v1.6.0 and `master` @ `ea0b158e`** — returns `WIDGET_NO_POPOUT: <id>`.
-  Verified by source inspection only, not a live run. Upstream #3032 fixed the
-  silent `hidden` fall-through but not the missing property, so plugins are now
-  wrong in a new way.
+  Verified live on 1.6.0: `toggle` opens the popout on screen, `status` still
+  answers `WIDGET_NO_POPOUT`. Upstream #3032 fixed the silent `hidden`
+  fall-through but not the missing property, so plugins are now wrong in a new
+  way.
+
+**Built-in widgets are the control, and they behave differently.** On 1.6.0
+`clock` and `controlCenterButton` answer `visible` while their popout is open,
+proving the IPC path itself works. Closed, they answer `WIDGET_NO_POPOUT`
+rather than `hidden` — the popout object appears to be created lazily, so
+there is nothing for the handler to read until it has been opened once. That
+quirk is separate from the plugin defect and probably not worth reporting.
 
 `toggle` is unaffected in every version; it routes through
 `PluginComponent.triggerPopout()` and never consults `popoutTarget`.
