@@ -24,7 +24,6 @@ PluginSettings {
         width: parent.width
         text: "Workspace Groups"
         font.pixelSize: Theme.fontSizeLarge
-        font.weight: Font.Bold
         color: Theme.surfaceText
     }
 
@@ -373,7 +372,6 @@ PluginSettings {
                                 visible: !groupCard.editing
                                 text: groupCard.modelData.title
                                 font.pixelSize: Theme.fontSizeMedium
-                                font.weight: Font.DemiBold
                                 color: Theme.surfaceText
                             }
 
@@ -480,7 +478,6 @@ PluginSettings {
                 width: parent.width
                 text: "Workspaces"
                 font.pixelSize: Theme.fontSizeLarge
-                font.weight: Font.Bold
                 color: Theme.surfaceText
             }
 

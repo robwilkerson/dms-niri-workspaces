@@ -2,8 +2,7 @@
 
 A [DankMaterialShell](https://github.com/AvengeMedia/DankMaterialShell) dankbar
 widget that shows the **focused** niri workspace as a pill **segmented to match
-its column count**, and opens a grouped switcher for every other named
-workspace.
+its column count**, and opens a grouped switcher for every named workspace.
 
 Where the built-in workspace switcher renders every workspace on the bar, this
 declutters to just the focused one — its name, and a small pill whose segment
@@ -18,13 +17,13 @@ strength; the rest are faded.
 
 ![The bar pill](./docs/pill.png)
 
-**In the dropdown:** every named workspace *except the focused one*, arranged
-into groups you define, each row carrying the same column pill. Click a row to
-switch to it. A "New workspace" action at the bottom jumps to niri's trailing
-auto-empty workspace.
+**In the dropdown:** every named workspace, arranged into groups you define,
+each row carrying the same column pill. Click a row to switch to it. A "New
+workspace" action at the bottom jumps to niri's trailing auto-empty workspace.
 
-The focused workspace is left out on purpose. It is already named on the bar,
-and a switcher listing where you already are wastes a row on a no-op.
+The focused workspace sits in its own group, marked with a dot and a bolder
+name. Listing it costs a row that does nothing when clicked, but it keeps every
+group at full height so the list holds its shape as you move around.
 
 ![The workspace switcher](./docs/screenshot.png)
 
@@ -98,6 +97,21 @@ Working: the bar pill, the grouped switcher, and settings-defined grouping.
 Ideas not yet committed to: per-column app icons, an icons-off toggle, and
 click-to-overview. Anything actually under consideration lives in the
 [issue tracker](https://github.com/robwilkerson/dms-niri-workspaces/issues).
+
+## About the Robot
+
+Yes, an LLM helped write this. So did an editor, a compiler, a linter,
+autocomplete, and a number of other tools. It's just a tool. One that "talks"
+back, but still a tool. And it helps me salvage some of my weekend. It types
+faster than I do, reads faster than I do, and, much to my chagrin, knows more
+than I do.
+
+Every line here was read, discussed, sometimes argued, and ultimately signed
+off by a human (me). I run this on my own bar all day and live with the result.
+
+The AI doesn't get the credit and it doesn't get the blame. If something here
+is broken, sloppy, or wrong, that's 100% on me and I welcome the feedback. A
+bug report or a PR is always appreciated.
 
 ## License
 

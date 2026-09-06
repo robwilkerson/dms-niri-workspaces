@@ -72,13 +72,12 @@ PluginComponent {
     readonly property var columnList: wsColumns(focusedWs)
 
     // Named workspaces in niri index order, excluding the transient trailing
-    // empty and the currently-focused one (a switcher shouldn't list where you
-    // already are).
+    // empty. The focused workspace is included and marked in place, so a group
+    // that owns it renders at full height instead of one row short.
     readonly property var namedWorkspaces: {
         const all = (NiriService.allWorkspaces || []).slice();
         all.sort(function (a, b) { return (a.idx || 0) - (b.idx || 0); });
-        const fid = root.focusedWs ? root.focusedWs.id : null;
-        return all.filter(function (w) { return w.name && w.name.length > 0 && w.id !== fid; });
+        return all.filter(function (w) { return w.name && w.name.length > 0; });
     }
 
     // ── Group membership (user-defined; see NiriWorkspacesSettings.qml) ──
@@ -165,6 +164,7 @@ PluginComponent {
     readonly property real segH: Math.max(8, barThickness * 0.30)
     readonly property real segW: Math.round(segH * 1.5)
     readonly property real segGap: 2
+    readonly property real dotSize: 6
 
     // ── Bar pill ────────────────────────────────────────────────────────
     horizontalBarPill: Component {
@@ -249,6 +249,8 @@ PluginComponent {
 
                     readonly property var rowCols: root.wsColumns(modelData)
                     readonly property var rowSegs: rowCols.length > 0 ? rowCols : [{ "col": 0, "active": false }]
+                    readonly property bool isActive: root.focusedWs !== null && modelData.id === root.focusedWs.id
+                    readonly property int labelWeight: isActive ? Font.DemiBold : Font.Normal
 
                     width: parent ? parent.width : 0
                     height: root.segH + Theme.spacingM
@@ -269,16 +271,42 @@ PluginComponent {
                         }
                     }
 
-                    StyledText {
+                    // The dot's slot is reserved on every row, not just the
+                    // active one, so names keep a common left edge and the
+                    // list doesn't jitter as focus moves between workspaces.
+                    Item {
+                        id: rowDot
                         anchors.left: parent.left
                         anchors.leftMargin: Theme.spacingM
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: root.dotSize
+                        height: root.dotSize
+
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: width / 2
+                            visible: wsRow.isActive
+                            color: Theme.primary
+                        }
+                    }
+
+                    StyledText {
+                        anchors.left: rowDot.right
+                        anchors.leftMargin: Theme.spacingS
                         anchors.right: rowPill.left
                         anchors.rightMargin: Theme.spacingS
                         anchors.verticalCenter: parent.verticalCenter
                         elide: Text.ElideRight
                         text: wsRow.modelData.name
                         font.pixelSize: Theme.fontSizeMedium
-                        font.weight: Font.Normal
+                        // DMS's sans is InterVariable.ttf, loaded through a QML
+                        // FontLoader that registers exactly one instance at
+                        // weight 400. font.weight alone therefore finds no
+                        // heavier face and silently renders Regular; the wght
+                        // axis has to be driven directly. DankIcon does the
+                        // same for Material Symbols.
+                        font.weight: wsRow.labelWeight
+                        font.variableAxes: ({ "wght": wsRow.labelWeight })
                         color: Theme.surfaceText
                     }
 
@@ -342,7 +370,6 @@ PluginComponent {
                                 anchors.leftMargin: Theme.spacingM
                                 text: grp.modelData.title
                                 font.pixelSize: Theme.fontSizeSmall
-                                font.weight: Font.DemiBold
                                 color: Theme.outline
                             }
                         }
