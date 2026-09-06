@@ -27,9 +27,12 @@ Feed both from one property so the two cannot drift. This is DMS's own idiom:
 same way to animate Material Symbols.
 
 **Scope.** Anything rendering text through `StyledText`, which is every label in
-every plugin. Assume any existing `font.weight` above Normal in this repo is
-currently a no-op and needs the axis added before it does what it claims —
-the group headers in `NiriWorkspaces.qml` were exactly that.
+every plugin. A `font.weight` above Normal with no matching axis is not merely
+ineffective, it is misleading: it reads as intent that the rendering never
+honored. This repo carried four such declarations (two section headers and a
+group title in the settings pane, one group header in the popout); all were
+deleted rather than repaired, because the unbolded look was the one actually
+shipped and preferred. Add the axis only where bold is genuinely wanted.
 
 Numeric axis values follow Qt 6's 100-900 weight scale, so `Font.Normal` is 400
 and `Font.DemiBold` is 600 and the enum can be passed straight through.
