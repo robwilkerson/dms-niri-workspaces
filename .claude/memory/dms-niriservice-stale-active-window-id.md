@@ -10,9 +10,12 @@ Those keys are strings. Both `handleWindowFocusChanged` and
 `handleWorkspaceActiveWindowChanged` pick the workspace to replace with
 `id === data.workspace_id`, comparing that string against niri's numeric id, so
 the updated copy is never written back. `handleWorkspacesChanged` then
-preserves the old value over the fresh one niri sent. Present in v1.6.0 and on
-upstream master as of September 2026. Nothing in DMS itself reads the field
+preserves the old value over the fresh one niri sent. Present in v1.6.0, v1.6.1
+and upstream master as of September 2026. Nothing in DMS itself reads the field
 except as a fallback behind `is_focused`, which is why it went unnoticed.
+Reported upstream as AvengeMedia/DankMaterialShell#3462 (2026-09-17), framed
+functionally without the mechanism; check its state before assuming the field
+is still frozen on a newer release.
 
 **Symptom in this plugin.** `wsColumns` once let a match on `active_window_id`
 compete with `is_focused`, last one in column order winning. A workspace whose
