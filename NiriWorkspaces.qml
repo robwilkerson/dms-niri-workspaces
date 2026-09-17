@@ -24,6 +24,14 @@ PluginComponent {
 
     // Distinct niri columns on a workspace, each flagged active if it holds
     // that workspace's focused/active window. Returns [{col, active}], sorted.
+    //
+    // A window's is_focused flag wins over the workspace's active_window_id.
+    // NiriService keeps is_focused current on every focus event, but its
+    // active_window_id handlers compare a string map key against niri's
+    // numeric workspace id, so that field never updates after the initial
+    // WorkspacesChanged. Trusting it alongside is_focused let a stale id pin
+    // the highlight to whichever column held that window. It remains the
+    // only signal for unfocused workspaces, where no window is_focused.
     function wsColumns(ws) {
         if (!ws)
             return [];
@@ -31,6 +39,7 @@ PluginComponent {
         const activeWinId = ws.active_window_id;
         const wins = NiriService.windows || [];
         let activeCol = -1;
+        let fallbackCol = -1;
         let cols = [];
         for (let i = 0; i < wins.length; i++) {
             const w = wins[i];
@@ -42,9 +51,13 @@ PluginComponent {
             const c = pos[0];
             if (cols.indexOf(c) < 0)
                 cols.push(c);
-            if ((activeWinId != null && w.id === activeWinId) || w.is_focused)
+            if (w.is_focused)
                 activeCol = c;
+            else if (activeWinId != null && w.id === activeWinId)
+                fallbackCol = c;
         }
+        if (activeCol < 0)
+            activeCol = fallbackCol;
         cols.sort(function (a, b) { return a - b; });
         let out = [];
         for (let i = 0; i < cols.length; i++)
