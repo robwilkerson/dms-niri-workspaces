@@ -26,12 +26,13 @@ PluginComponent {
     // that workspace's focused/active window. Returns [{col, active}], sorted.
     //
     // A window's is_focused flag wins over the workspace's active_window_id.
-    // NiriService keeps is_focused current on every focus event, but its
-    // active_window_id handlers compare a string map key against niri's
-    // numeric workspace id, so that field never updates after the initial
-    // WorkspacesChanged. Trusting it alongside is_focused let a stale id pin
-    // the highlight to whichever column held that window. It remains the
-    // only signal for unfocused workspaces, where no window is_focused.
+    // On DMS through 1.6.1, NiriService never updates active_window_id after
+    // the initial WorkspacesChanged; fixed upstream, see
+    // https://github.com/AvengeMedia/DankMaterialShell/issues/3462. Trusting
+    // it alongside is_focused let a stale id pin the highlight to whichever
+    // column held that window. The ordering is correct on either side of the
+    // fix, and it remains the only signal for unfocused workspaces, where
+    // nothing is_focused.
     function wsColumns(ws) {
         if (!ws)
             return [];
